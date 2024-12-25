@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/14.0.1/math.js"></script>
+    <style>
+        /* Reset default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Center the calculator on the page */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #74ebd5, #acb6e5);
+            font-family: 'Arial', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Main container for the calculator */
+        .main {
+            position: relative;
+            height: 780px;
+            width: 27%;
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            z-index: 1;
+        }
+
+        /* Animated border */
+        .border {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #8d5f0b, #1277a2, #0b6a18, #4d79ff);
+            background-size: 400% 400%;
+            animation: gradientAnimation 10s ease infinite;
+            z-index: 0;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            25% {
+                background-position: 50% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            75% {
+                background-position: 50% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Header title for the calculator */
+        h3 {
+            height: 50px;
+            width: 100%;
+            font-size: 25px;
+            color: #ffffff;
+            text-align: center;
+            padding-top: 10px;
+            text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Screen to display numbers and results */
+        .screen {
+            height: 150px;
+            width: 85%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            margin: 20px auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        ::placeholder {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 45px;
+            font-weight: 700;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            text-align: right;
+        }
+
+        #display {
+            height: 100%;
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: rgba(0, 0, 0, 0.799);
+            font-size: 45px;
+            font-weight: 700;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            text-align: right;
+        }
+
+        /* Container for all buttons */
+        .cal_c-button {
+            height: 400px;
+            width: 100%;
+            margin-top: 5%;
+        }
+
+        /* Row for each set of buttons */
+        .button-row {
+            height: 80px;
+            width: 100%;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        /* General button styling */
+        .button {
+            height: 70px;
+            width: 70px;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #e0e0e0, #ffffff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2),
+                -2px -2px 10px rgba(255, 255, 255, 0.5);
+            transition: transform 0.2s, background 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Hover effect for buttons */
+        .button:hover {
+            transform: scale(1.1);
+            background: linear-gradient(145deg, #ffffff, #e0e0e0);
+            box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.3),
+                -2px -2px 15px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Styling for operator buttons */
+        #button-operator {
+            background: linear-gradient(135deg, #f39c12, #f1c40f);
+            color: white;
+            border-radius: 50%;
+            font-size: 28px;
+            transition-duration: .3s;
+        }
+
+        #button-operator:hover {
+            transform: scale(1.15);
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+        }
+
+        /* Styling for equals button */
+        #button-equals {
+            background: linear-gradient(145deg, #1abc9c, #16a085);
+            color: white;
+            border-radius: 15px;
+            transition-duration: .3s;
+        }
+
+        #button-equals:hover {
+            transform: scale(1.1);
+            background: linear-gradient(145deg, #16a085, #1abc9c);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="border"></div>
+    <div class="main" id="cal-c">
+        <h3>CASIO-5 <sup>&#174;</sup></h3>
+        <div class="screen">
+            <input type="text" id="display" readonly placeholder="0">
+        </div>
+        <div class="cal_c-button">
+            <div class="button-row">
+                <div><button class="button" id="button-operator" onclick="clearDisplay()">AC</button></div>
+                <div><button class="button" id="button-operator" onclick="deleteLast()">DE</button></div>
+                <div><button class="button" id="button-operator" onclick="appendToDisplay('%')">%</button></div>
+                <div><button class="button" id="button-operator" onclick="appendToDisplay('/')">/</button></div>
+            </div>
+            <div class="button-row">
+                <div><button class="button" id="button-number" onclick="appendToDisplay('7')">7</button></div>
+                <div><button class="button" id="button-number" onclick="appendToDisplay('8')">8</button></div>
+                <div><button class="button" id="button-number" onclick="appendToDisplay('9')">9</button></div>
+                <div><button class="button" id="button-operator" onclick="appendToDisplay('')">*</button></div>
+            </div>
+            <div class="button-row">
+                <div><button class="button" id="button-number" onclick="appendToDisplay('4')">4</button></div>
+                <div><button class="button" id="button-number" onclick="appendToDisplay('5')">5</button></div>
+                <div><button class="button" id="button-number" onclick="appendToDisplay('6')">6</button></div>
+                <div><button class="button" id="button-operator" onclick="appendToDisplay('-')">-</button></div>
+            </div>
+            <div class="button-row">
+                <div><button class="button" id="button-number" onclick="appendToDisplay('1')">1</button></div>
+                <div><button class="button" id="button-number" onclick="appendToDisplay('2')">2</button></div>
+                <div><button class="button" id="button-number" onclick="appendToDisplay('3')">3</button></div>
+                <div><button class="button" id="button-operator" onclick="appendToDisplay('+')">+</button></div>
+            </div>
+            <div class="button-row">
+                <div><button class="button" id="button-number" onclick="appendToDisplay('00')">00</button></div>
+                <div><button class="button" id="button-number" onclick="appendToDisplay('0')">0</button></div>
+                <div><button class="button" id="button-number" onclick="appendToDisplay('.')">.</button></div>
+                <div><button class="button" id="button-equals" onclick="calculateResult()">=</button></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to append a value to the display
+        function appendToDisplay(value) {
+            document.getElementById("display").value += value;
+        }
+
+        // Function to clear the display
+        function clearDisplay() {
+            document.getElementById("display").value = "";
+        }
+
+        // Function to delete the last character from the display
+        function deleteLast() {
+            let display = document.getElementById("display");
+            display.value = display.value.slice(0, -1);
+        }
+
+        // Function to calculate the result of the expression in the display
+        function calculateResult() {
+            let x = document.getElementById("display").value;
+            let display = document.getElementById("display");
+            try {
+                display.value = math.evaluate(x); // Use mathjs to evaluate the expression
+            } catch (error) {
+                display.value = "Error"; // Display error if evaluation fails
+            }
+        }
+
+        // Event listener to add keydown event when the DOM content is loaded
+        document.addEventListener('keydown', function (event) {
+            // If the key is a number or an operator, append it to the display
+            if ('0123456789+-*/.'.includes(event.key)) {
+                appendToDisplay(event.key);
+            }
+            // If the key is Enter, calculate the result
+            if (event.key === 'Enter') {
+                calculateResult();
+            }
+            // If the key is Backspace, delete the last character
+            if (event.key === 'Backspace') {
+                deleteLast();
+            }
+        });
+    </script>
+</body>
+
+</html>
